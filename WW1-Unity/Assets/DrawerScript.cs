@@ -9,13 +9,23 @@ public class DrawerScript : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-		Debug.DrawLine(Vector3.zero, new Vector3(1, 0, 0), Color.red);
 
+        var fileData = System.IO.File.ReadAllText("Assets/places_gicentre.csv");
+        var lines  = fileData.Split("\n"[0]);
+        var lineData  = lines[1].Split(","[0]);
+        string x = lineData[0];
+        Debug.Log(fileData);
+        Debug.Log(lines);
+        Debug.Log(lineData);
+        Debug.Log(x);
     }
 
-	// Update is called once per frame
-	void Update () {
-        DrawLine(vectorBegin, vectorEnd, new Color(40, 10, 200), 0.2f);
+    // Update is called once per frame
+    void Update () {
+        var valRed = Random.value;
+        var valGreen = Random.value;
+        var valBlue= Random.value;
+        DrawLine(vectorBegin, vectorEnd, new Color(valRed, valGreen, valBlue), 0.1f);
     }
 
     void DrawLine(Vector3 start, Vector3 end, Color color, float duration = 0.2f)
@@ -31,5 +41,4 @@ public class DrawerScript : MonoBehaviour {
         lr.SetPosition(1, end);
         GameObject.Destroy(myLine, duration);
     }
-
 }
