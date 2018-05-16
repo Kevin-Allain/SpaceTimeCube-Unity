@@ -7,28 +7,45 @@ public class DrawerScript : MonoBehaviour {
     Vector3 vectorBegin = Vector3.zero;
     Vector3 vectorEnd = new Vector3(14, 3, 3);
 
+    static float wrongTimeUp = 0;
+
     // Use this for initialization
     void Start () {
 
         var fileData = System.IO.File.ReadAllText("Assets/places_gicentre.csv");
         var lines  = fileData.Split("\n"[0]);
+        Debug.Log("lines.Length: "); Debug.Log(lines.Length);
         var lineData  = lines[1].Split(","[0]);
-        string x = lineData[0];
         Debug.Log(fileData);
-        Debug.Log(lines);
-        Debug.Log(lineData);
-        Debug.Log(x);
+        Debug.Log(lines); Debug.Log(lineData);
+        for ( var i = 1; i < lines.Length -2; i++)
+        {
+            var lineIndex0 = lines[i].Split(","[0]);
+            var futureLine= lines[i+1].Split(","[0]);
+            Debug.Log("lineIndex0: "); Debug.Log(lineIndex0);
+            Debug.Log("i: " + i);
+            float longitude = float.Parse( lineIndex0[7] );
+            float latitude = float.Parse( lineIndex0[8] );
+            float futureLongitude = float.Parse(futureLine[7]);
+            float futureLatitude = float.Parse(futureLine[8]);
+
+            Vector3 currentVec = new Vector3(longitude, wrongTimeUp, latitude);
+            wrongTimeUp +=.1f;
+            Vector3 futureVec = new Vector3(futureLongitude, wrongTimeUp, futureLatitude);
+
+            DrawLine(currentVec, futureVec, new Color(1, 0, 0, .4f));
+
+        }
+
     }
 
     // Update is called once per frame
     void Update () {
-        var valRed = Random.value;
-        var valGreen = Random.value;
-        var valBlue= Random.value;
-        DrawLine(vectorBegin, vectorEnd, new Color(valRed, valGreen, valBlue), 0.1f);
+
     }
 
-    void DrawLine(Vector3 start, Vector3 end, Color color, float duration = 0.2f)
+
+    void DrawLine(Vector3 start, Vector3 end, Color color, float duration = -1f)
     {
         GameObject myLine = new GameObject();
         myLine.transform.position = start;
@@ -39,6 +56,6 @@ public class DrawerScript : MonoBehaviour {
         lr.SetWidth(0.1f, 0.1f);
         lr.SetPosition(0, start);
         lr.SetPosition(1, end);
-        GameObject.Destroy(myLine, duration);
+        if (duration != -1f) { GameObject.Destroy(myLine, duration); }
     }
 }
