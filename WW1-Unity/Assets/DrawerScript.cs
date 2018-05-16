@@ -18,6 +18,13 @@ public class DrawerScript : MonoBehaviour {
         var lineData  = lines[1].Split(","[0]);
         Debug.Log(fileData);
         Debug.Log(lines); Debug.Log(lineData);
+
+        float minLatitude = float.Parse(lines[1].Split(","[0])[8]);
+        float minLongitude = float.Parse(lines[1].Split(","[0])[8]);
+        float maxLatitude = minLatitude;
+        float maxLongitude = minLongitude;
+
+
         for ( var i = 1; i < lines.Length -2; i++)
         {
             var lineIndex0 = lines[i].Split(","[0]);
@@ -35,8 +42,15 @@ public class DrawerScript : MonoBehaviour {
 
             DrawLine(currentVec, futureVec, new Color(1, 0, 0, .4f));
 
-        }
+            if (minLatitude > latitude) minLatitude = latitude;
+            if (maxLatitude < latitude) maxLatitude = latitude;
+            if (minLongitude> longitude) minLongitude = longitude;
+            if (maxLongitude < longitude) maxLongitude = longitude;
 
+
+        }
+        Debug.Log("minLatitude: " + minLatitude + ", maxLatitude: " + maxLatitude);
+        Debug.Log("minLongitude: " + minLongitude + ", maxLongitude: " + maxLongitude);
     }
 
     // Update is called once per frame
