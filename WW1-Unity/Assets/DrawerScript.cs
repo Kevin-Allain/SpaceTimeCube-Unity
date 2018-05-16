@@ -7,10 +7,20 @@ public class DrawerScript : MonoBehaviour {
     Vector3 vectorBegin = Vector3.zero;
     Vector3 vectorEnd = new Vector3(14, 3, 3);
 
+    public GameObject regionPlane;
+
     static float wrongTimeUp = 0;
 
     // Use this for initialization
     void Start () {
+
+        var picData = System.IO.File.ReadAllText("Assets/mapWW1-region.wld");
+        var linesPic = picData.Split("\n"[0]);
+        for ( var j = 0; j < linesPic.Length-1; j++)
+        {
+            Debug.Log("linesPic[j]: " + linesPic[j]);
+        }
+        Debug.Log("regionPlane.transform.position: "); Debug.Log(regionPlane.transform.position);
 
         var fileData = System.IO.File.ReadAllText("Assets/places_gicentre.csv");
         var lines  = fileData.Split("\n"[0]);
@@ -19,26 +29,31 @@ public class DrawerScript : MonoBehaviour {
         Debug.Log(fileData);
         Debug.Log(lines); Debug.Log(lineData);
 
+        DrawLinesAtCenterOfScene();
+        DrawLinesAtBordersOfCube();
+
         float minLatitude = float.Parse(lines[1].Split(","[0])[8]);
         float minLongitude = float.Parse(lines[1].Split(","[0])[8]);
         float maxLatitude = minLatitude;
         float maxLongitude = minLongitude;
 
+        var latitudeOffset = regionPlane.transform.position.x;
+        var longitudeOffset = regionPlane.transform.position.z;
+        Debug.Log("latitudeOffset: "+latitudeOffset+ ", longitudeOffset: " + longitudeOffset);
 
         for ( var i = 1; i < lines.Length -2; i++)
         {
             var lineIndex0 = lines[i].Split(","[0]);
             var futureLine= lines[i+1].Split(","[0]);
-            Debug.Log("lineIndex0: "); Debug.Log(lineIndex0);
-            Debug.Log("i: " + i);
-            float longitude = float.Parse( lineIndex0[7] );
-            float latitude = float.Parse( lineIndex0[8] );
-            float futureLongitude = float.Parse(futureLine[7]);
-            float futureLatitude = float.Parse(futureLine[8]);
 
-            Vector3 currentVec = new Vector3(longitude, wrongTimeUp, latitude);
+            float longitude = float.Parse(lineIndex0[7]);// + longitudeOffset;
+            float latitude = -float.Parse(lineIndex0[8]);// + latitudeOffset ;
+            float futureLongitude = float.Parse(futureLine[7]);// + longitudeOffset;
+            float futureLatitude = -float.Parse(futureLine[8]);// + latitudeOffset ;
+
+            Vector3 currentVec = new Vector3(latitude, wrongTimeUp,  longitude);
             wrongTimeUp +=.1f;
-            Vector3 futureVec = new Vector3(futureLongitude, wrongTimeUp, futureLatitude);
+            Vector3 futureVec = new Vector3(futureLatitude , wrongTimeUp,  futureLongitude);
 
             DrawLine(currentVec, futureVec, new Color(1, 0, 0, .4f));
 
@@ -72,4 +87,29 @@ public class DrawerScript : MonoBehaviour {
         lr.SetPosition(1, end);
         if (duration != -1f) { GameObject.Destroy(myLine, duration); }
     }
+
+    void DrawLinesAtBordersOfCube()
+    {
+        Debug.Log("DrawLinesAtBordersOfCube");
+        var pos = regionPlane.transform.position;
+        var scale = regionPlane.transform.localScale;
+        Debug.Log(pos);
+        Debug.Log(scale);
+        
+        DrawLine(new Vector3(pos.x, pos.y, pos.z), new Vector3(pos.x, pos.y + 50, pos.z), new Color(1f,1f,0f));
+        // Draw at the four corners
+        DrawLine(new Vector3(pos.x - scale.x/2, pos.y, pos.z - scale.z / 2), new Vector3(pos.x - scale.x / 2, pos.y + 50, pos.z - scale.z / 2), new Color(1f, 1f, 0f));
+        DrawLine(new Vector3(pos.x - scale.x / 2, pos.y, pos.z + scale.z / 2), new Vector3(pos.x - scale.x / 2, pos.y + 50, pos.z + scale.z / 2), new Color(1f, 1f, 0f));
+        DrawLine(new Vector3(pos.x + scale.x / 2, pos.y, pos.z - scale.z / 2), new Vector3(pos.x + scale.x / 2, pos.y + 50, pos.z - scale.z / 2), new Color(1f, 1f, 0f));
+        DrawLine(new Vector3(pos.x + scale.x / 2, pos.y, pos.z + scale.z / 2), new Vector3(pos.x + scale.x / 2, pos.y + 50, pos.z + scale.z / 2), new Color(1f, 1f, 0f));
+
+    }
+
+    void DrawLinesAtCenterOfScene()
+    {
+        DrawLine(new Vector3(0f, 0f, 0f), new Vector3(0f, 200, 0f), new Color(1f, 1f, 1f));
+
+    }
+
+
 }
