@@ -33,12 +33,13 @@ public class DrawerScript : MonoBehaviour {
         DrawLinesAtBordersOfCube();
 
         float minLatitude = float.Parse(lines[1].Split(","[0])[8]);
-        float minLongitude = float.Parse(lines[1].Split(","[0])[8]);
+        float minLongitude = float.Parse(lines[1].Split(","[0])[7]);
         float maxLatitude = minLatitude;
         float maxLongitude = minLongitude;
 
-        var latitudeOffset = regionPlane.transform.position.x;
-        var longitudeOffset = regionPlane.transform.position.z;
+        float longitudeOffset = -4.21600342f;
+        float latitudeOffset = 54.97935281f;
+        //var latitudeOffset = regionPlane.transform.position.x; var longitudeOffset = regionPlane.transform.position.z;
         Debug.Log("latitudeOffset: "+latitudeOffset+ ", longitudeOffset: " + longitudeOffset);
 
         for ( var i = 1; i < lines.Length -2; i++)
@@ -47,20 +48,28 @@ public class DrawerScript : MonoBehaviour {
             var futureLine= lines[i+1].Split(","[0]);
 
             float longitude = float.Parse(lineIndex0[7]);// + longitudeOffset;
-            float latitude = -float.Parse(lineIndex0[8]);// + latitudeOffset ;
+            float latitude = float.Parse(lineIndex0[8]);// + latitudeOffset ;
             float futureLongitude = float.Parse(futureLine[7]);// + longitudeOffset;
-            float futureLatitude = -float.Parse(futureLine[8]);// + latitudeOffset ;
+            float futureLatitude = float.Parse(futureLine[8]);// + latitudeOffset ;
+            //latitude -= 51.61978808f; futureLatitude -= 51.61978808f;
+            //longitude += 1.40350342f; futureLongitude+= 1.40350342f;
 
-            Vector3 currentVec = new Vector3(latitude, wrongTimeUp,  longitude);
+            // x axis in Unity opposite direction of x axis from data
+            Vector3 currentVec = new Vector3(-longitude, wrongTimeUp,  latitude);
             wrongTimeUp +=.1f;
-            Vector3 futureVec = new Vector3(futureLatitude , wrongTimeUp,  futureLongitude);
+            Vector3 futureVec = new Vector3(-futureLongitude, wrongTimeUp,  futureLatitude);
 
-            DrawLine(currentVec, futureVec, new Color(1, 0, 0, .4f));
+            if (minLatitude > latitude) minLatitude = latitude; if (maxLatitude < latitude) maxLatitude = latitude;
+            if (minLongitude> longitude) minLongitude = longitude; if (maxLongitude < longitude) maxLongitude = longitude;
 
-            if (minLatitude > latitude) minLatitude = latitude;
-            if (maxLatitude < latitude) maxLatitude = latitude;
-            if (minLongitude> longitude) minLongitude = longitude;
-            if (maxLongitude < longitude) maxLongitude = longitude;
+            Vector3 posBegining = new Vector3( (currentVec.x +longitudeOffset )*(10.66667f) , currentVec.y, currentVec.z - latitudeOffset);
+            Vector3 posFuture = new Vector3( (futureVec.x + longitudeOffset) * (10.66667f) , futureVec.y, futureVec.z - latitudeOffset);
+            Debug.Log("longitude: " + longitude + ", latitude: "+ latitude);
+            Debug.Log("posBegining: " + posBegining);
+            Debug.Log("futureLongitude: " + futureLongitude + ", futureLatitude: " + futureLatitude);
+            Debug.Log("posFuture: " + posFuture);
+
+            DrawLine(posBegining, posFuture, new Color(1, 0, 0, .4f));
 
 
         }
