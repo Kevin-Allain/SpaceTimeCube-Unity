@@ -29,9 +29,6 @@ public class DrawerScript : MonoBehaviour {
         Debug.Log(fileData);
         Debug.Log(lines); Debug.Log(lineData);
 
-        DrawLinesAtCenterOfScene();
-        DrawLinesAtBordersOfCube();
-
         float minLatitude = float.Parse(lines[1].Split(","[0])[8]);
         float minLongitude = float.Parse(lines[1].Split(","[0])[7]);
         float maxLatitude = minLatitude;
@@ -61,9 +58,13 @@ public class DrawerScript : MonoBehaviour {
 
             if (minLatitude > latitude) minLatitude = latitude; if (maxLatitude < latitude) maxLatitude = latitude;
             if (minLongitude> longitude) minLongitude = longitude; if (maxLongitude < longitude) maxLongitude = longitude;
-
-            Vector3 posBegining = new Vector3( (currentVec.x +longitudeOffset )*(10.66667f) , currentVec.y, currentVec.z - latitudeOffset);
-            Vector3 posFuture = new Vector3( (futureVec.x + longitudeOffset) * (10.66667f) , futureVec.y, futureVec.z - latitudeOffset);
+            // We calculated the multiplyer longitude offset as 10.66667f based on the width of the picture, the width of the plane being 150 in Unity, and the .wld file. Same idea for latitude offset.
+            Vector3 posBegining = new Vector3( (currentVec.x +longitudeOffset )*(10.66667f) , 
+                currentVec.y, 
+                (currentVec.z - latitudeOffset) *(-16.84565890514537f) );
+            Vector3 posFuture = new Vector3( (futureVec.x + longitudeOffset) * (10.66667f) , 
+                futureVec.y, 
+                (futureVec.z - latitudeOffset)*(-16.84565890514537f) );
             Debug.Log("longitude: " + longitude + ", latitude: "+ latitude);
             Debug.Log("posBegining: " + posBegining);
             Debug.Log("futureLongitude: " + futureLongitude + ", futureLatitude: " + futureLatitude);
